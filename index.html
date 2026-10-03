@@ -1,0 +1,3228 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>わが家のお出かけ v0.9</title>
+
+<style>
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f5f7;
+  margin: 0;
+  color: #1d1d1f;
+}
+
+.container {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 45px 24px;
+}
+
+h1 {
+  font-size: 42px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #6e6e73;
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.06);
+  margin-top: 20px;
+}
+
+.conditions {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d2d2d7;
+  background: white;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+textarea {
+  min-height: 200px;
+  resize: vertical;
+}
+
+button {
+  background: #0071e3;
+  color: white;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+button:hover {
+  background: #0077ed;
+}
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.secondary {
+  background: #e8e8ed;
+  color: #1d1d1f;
+}
+
+.success {
+  color: #16833b;
+  font-weight: bold;
+}
+
+.error {
+  color: #c62828;
+  font-weight: bold;
+}
+
+.small {
+  color: #6e6e73;
+  font-size: 14px;
+}
+
+.location-box {
+  background: #f5f5f7;
+  padding: 18px;
+  border-radius: 14px;
+}
+
+.location-name {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.database-card,
+.result-card {
+  background: #f5f5f7;
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 15px;
+}
+
+.database-card h3,
+.result-card h3 {
+  margin-top: 0;
+}
+
+.score {
+  display: inline-block;
+  background: #e8f2ff;
+  padding: 6px 11px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.origin-tag {
+  display: inline-block;
+  background: #e8e8ed;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  margin: 5px 0;
+}
+
+.parking-tag {
+  display: inline-block;
+  background: #eef6ee;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  margin: 5px 0;
+}
+
+.note {
+  color: #6e6e73;
+}
+
+.weather-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(72px,1fr));
+  gap: 7px;
+  overflow-x: auto;
+  margin: 15px 0;
+}
+
+.weather-day {
+  background: white;
+  border-radius: 11px;
+  padding: 10px 6px;
+  text-align: center;
+  min-width: 68px;
+}
+
+.weather-date {
+  font-size: 12px;
+  color: #6e6e73;
+}
+
+.weather-icon {
+  font-size: 24px;
+  margin: 4px 0;
+}
+
+.weather-temp {
+  font-size: 13px;
+}
+
+.selected-weather {
+  background: #e8f2ff;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.event-box {
+  background: #fff5e8;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.parking-box {
+  background: #eef6ee;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+a {
+  color: #0071e3;
+  font-weight: bold;
+}
+
+#promptArea,
+#databaseArea,
+#results {
+  display: none;
+}
+
+@media(max-width:650px) {
+
+  .conditions {
+    grid-template-columns:1fr;
+  }
+
+  h1 {
+    font-size:32px;
+  }
+
+  .container {
+    padding:30px 15px;
+  }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+<h1>🏠 わが家のお出かけ</h1>
+<p class="subtitle">現在地から、今日ちょうどいい場所を。</p>
+
+
+<!-- =================================
+     現在地
+================================= -->
+
+<div class="card">
+
+<h2>📍 現在地</h2>
+
+<div class="location-box">
+
+<div id="locationDisplay" class="location-name">
+現在地：未取得
+</div>
+
+<p id="locationDetail" class="small">
+まず現在地を取得してください。
+</p>
+
+<button onclick="getCurrentLocation()">
+📍 現在地を取得
+</button>
+
+<p id="locationMessage"></p>
+
+</div>
+
+</div>
+
+
+<!-- =================================
+     STEP 1
+================================= -->
+
+<div class="card">
+
+<h2>🔎 STEP 1　お出かけ候補を集める</h2>
+
+<p>
+現在地を起点に、どこまで候補を探すか選びます。
+</p>
+
+<label for="searchRange">
+移動範囲
+</label>
+
+<select id="searchRange">
+
+<option value="5">
+5km以内（車で約15分程度）
+</option>
+
+<option value="15">
+15km以内（車で約30〜45分程度）
+</option>
+
+<option value="20">
+20km以内（車で約45〜60分程度）
+</option>
+
+<option value="50" selected>
+50km以内（車で約1〜1.5時間程度）
+</option>
+
+<option value="100">
+100km以内（車で約2時間程度）
+</option>
+
+<option value="200">
+200km以内（車で約3〜4時間程度）
+</option>
+
+<option value="over200">
+200km超（旅行・遠出）
+</option>
+
+</select>
+
+<p class="small">
+※ 車の時間は道路状況を考慮した大まかな目安です。
+</p>
+
+<button
+id="promptButton"
+onclick="generatePrompt()"
+disabled>
+📋 この範囲の検索プロンプトを生成
+</button>
+
+
+<div id="promptArea">
+
+<br>
+
+<label for="generatedPrompt">
+ChatGPTに送るプロンプト
+</label>
+
+<textarea id="generatedPrompt"></textarea>
+
+<button onclick="copyPrompt()">
+📋 プロンプトをコピー
+</button>
+
+<p id="copyMessage"></p>
+
+</div>
+
+</div>
+
+
+<!-- =================================
+     STEP 2
+================================= -->
+
+<div class="card">
+
+<h2>🤖 STEP 2　検索結果を取り込む</h2>
+
+<p>
+ChatGPTから返ってきたJSONをそのまま貼り付けます。
+</p>
+
+<textarea
+id="importData"
+placeholder="ここにJSONを貼り付け">
+</textarea>
+
+<button onclick="importSpots()">
+📥 お出かけ候補を一括取り込み
+</button>
+
+<p id="importMessage"></p>
+
+<p>
+📚 保存済み：
+<strong id="databaseTotalCount">0</strong>件
+</p>
+
+<button
+id="databaseToggleButton"
+class="secondary"
+onclick="toggleDatabase()">
+🗂 データベース一覧を見る
+</button>
+
+
+<div id="databaseArea">
+
+<h3>🗂 お出かけデータベース</h3>
+
+<p id="databaseListCount"></p>
+
+<div id="databaseList"></div>
+
+</div>
+
+</div>
+
+
+<!-- =================================
+     STEP 3
+================================= -->
+
+<div class="card">
+
+<h2>✨ STEP 3　お出かけ先を探す</h2>
+
+<p>
+行く日・移動方法・時間・屋内外・現地の天気などから、
+条件に合う候補をランキングします。
+</p>
+
+
+<div class="conditions">
+
+
+<div>
+
+<label for="outingDay">
+📅 いつ行く？
+</label>
+
+<select id="outingDay"></select>
+
+</div>
+
+
+<div>
+
+<label for="transport">
+移動手段は？
+</label>
+
+<select id="transport">
+
+<option value="train">
+🚃 電車・バス
+</option>
+
+<option value="car">
+🚗 車
+</option>
+
+<option value="longDistance">
+✈️ 新幹線・飛行機
+</option>
+
+<option value="walk">
+🚶 徒歩
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label for="maxTime">
+何分まで？
+</label>
+
+<select id="maxTime">
+
+<option value="30">
+30分以内
+</option>
+
+<option value="60" selected>
+60分以内
+</option>
+
+<option value="90">
+90分以内
+</option>
+
+<option value="120">
+120分以内
+</option>
+
+<option value="over120">
+120分超
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label for="environment">
+屋内・屋外
+</label>
+
+<select id="environment">
+
+<option value="any" selected>
+🌤 どちらでも
+</option>
+
+<option value="indoor">
+🏠 屋内
+</option>
+
+<option value="outdoor">
+🌳 屋外
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
+<button
+id="findButton"
+onclick="findMatches()"
+disabled>
+✨ この条件で候補を探す
+</button>
+
+<p id="areaDatabaseMessage" class="small"></p>
+
+</div>
+
+
+<!-- =================================
+     結果
+================================= -->
+
+<div id="results" class="card">
+
+<h2>🎯 おすすめ候補</h2>
+
+<p id="resultSummary"></p>
+
+<div id="resultList"></div>
+
+</div>
+
+
+<!-- =================================
+     DB管理
+================================= -->
+
+<div class="card">
+
+<h2>🗃 データベース管理</h2>
+
+<p>
+各地域で集めたお出かけ候補を
+このブラウザに保存しています。
+</p>
+
+<button
+class="secondary"
+onclick="clearDatabase()">
+🗑 全データを削除
+</button>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =====================================
+   状態
+===================================== */
+
+let searchOrigin = null;
+
+const ORIGIN_MATCH_KM = 3;
+
+
+/* =====================================
+   DB
+===================================== */
+
+function getSpots() {
+
+  return JSON.parse(
+    localStorage.getItem("outingSpotsV07")
+  ) || [];
+
+}
+
+
+function saveSpots(spots) {
+
+  localStorage.setItem(
+    "outingSpotsV07",
+    JSON.stringify(spots)
+  );
+
+}
+
+
+function updateCounts() {
+
+  document.getElementById(
+    "databaseTotalCount"
+  ).textContent =
+    getSpots().length;
+
+}
+
+
+/* =====================================
+   現在地取得
+===================================== */
+
+function getCurrentLocation() {
+
+  const message =
+    document.getElementById(
+      "locationMessage"
+    );
+
+  message.className = "";
+
+  message.textContent =
+    "📡 現在地を取得しています...";
+
+
+  if (!navigator.geolocation) {
+
+    message.className =
+      "error";
+
+    message.textContent =
+      "このブラウザでは位置情報を取得できません。";
+
+    return;
+
+  }
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    async position => {
+
+      const lat =
+        position.coords.latitude;
+
+      const lon =
+        position.coords.longitude;
+
+
+      let name =
+        "現在地";
+
+
+      try {
+
+        const url =
+          "https://nominatim.openstreetmap.org/reverse" +
+          "?format=jsonv2" +
+          "&lat=" + lat +
+          "&lon=" + lon +
+          "&accept-language=ja";
+
+
+        const response =
+          await fetch(url);
+
+
+        const data =
+          await response.json();
+
+
+        const a =
+          data.address || {};
+
+
+        const state =
+          a.state || "";
+
+
+        const city =
+          a.city ||
+          a.town ||
+          a.village ||
+          a.municipality ||
+          "";
+
+
+        const suburb =
+          a.suburb ||
+          a.quarter ||
+          a.neighbourhood ||
+          "";
+
+
+        const parts =
+          [state,city,suburb]
+          .filter(Boolean);
+
+
+        if (parts.length) {
+
+          name =
+            parts.join("") +
+            "周辺";
+
+        }
+
+
+      } catch(e) {
+
+        console.log(e);
+
+      }
+
+
+      searchOrigin = {
+
+        name:name,
+        latitude:lat,
+        longitude:lon
+
+      };
+
+
+      document.getElementById(
+        "locationDisplay"
+      ).textContent =
+        "📍 " + name;
+
+
+      document.getElementById(
+        "locationDetail"
+      ).textContent =
+        "緯度 " +
+        lat.toFixed(4) +
+        " / 経度 " +
+        lon.toFixed(4);
+
+
+      message.className =
+        "success";
+
+
+      message.textContent =
+        "✅ この場所を検索起点に設定しました。";
+
+
+      document.getElementById(
+        "promptButton"
+      ).disabled =
+        false;
+
+
+      document.getElementById(
+        "findButton"
+      ).disabled =
+        false;
+
+
+      updateAreaDatabaseMessage();
+
+    },
+
+
+    error => {
+
+      message.className =
+        "error";
+
+
+      message.textContent =
+        "⚠️ 現在地を取得できませんでした。位置情報の許可を確認してください。";
+
+    },
+
+
+    {
+      enableHighAccuracy:false,
+      timeout:10000,
+      maximumAge:300000
+    }
+
+  );
+
+}
+
+
+/* =====================================
+   距離計算
+===================================== */
+
+function distanceKm(
+  lat1,
+  lon1,
+  lat2,
+  lon2
+) {
+
+  const R =
+    6371;
+
+
+  const rad =
+    d =>
+      d *
+      Math.PI /
+      180;
+
+
+  const dLat =
+    rad(
+      lat2-lat1
+    );
+
+
+  const dLon =
+    rad(
+      lon2-lon1
+    );
+
+
+  const a =
+    Math.sin(dLat/2) ** 2 +
+    Math.cos(rad(lat1)) *
+    Math.cos(rad(lat2)) *
+    Math.sin(dLon/2) ** 2;
+
+
+  return R *
+    2 *
+    Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1-a)
+    );
+
+}
+
+
+/* =====================================
+   現在地対応DB
+===================================== */
+
+function getLocalSpots() {
+
+  if (!searchOrigin) {
+
+    return [];
+
+  }
+
+
+  return getSpots().filter(
+    spot => {
+
+      const origin =
+        spot.searchOrigin;
+
+
+      if (
+        !origin ||
+        origin.latitude == null ||
+        origin.longitude == null
+      ) {
+
+        return false;
+
+      }
+
+
+      return distanceKm(
+
+        searchOrigin.latitude,
+        searchOrigin.longitude,
+
+        origin.latitude,
+        origin.longitude
+
+      ) <= ORIGIN_MATCH_KM;
+
+    }
+  );
+
+}
+
+
+function updateAreaDatabaseMessage() {
+
+  if (!searchOrigin) {
+
+    return;
+
+  }
+
+
+  const count =
+    getLocalSpots().length;
+
+
+  const el =
+    document.getElementById(
+      "areaDatabaseMessage"
+    );
+
+
+  if (count === 0) {
+
+    el.textContent =
+      "📍 この周辺のデータはまだありません。STEP 1から候補を集めてください。";
+
+  } else {
+
+    el.textContent =
+      "📍 現在地に対応する候補：" +
+      count +
+      "件";
+
+  }
+
+}
+
+
+/* =====================================
+   行く日
+===================================== */
+
+function setupDays() {
+
+  const select =
+    document.getElementById(
+      "outingDay"
+    );
+
+
+  select.innerHTML =
+    "";
+
+
+  for (
+    let i=0;
+    i<7;
+    i++
+  ) {
+
+    const date =
+      new Date();
+
+
+    date.setDate(
+      date.getDate()+i
+    );
+
+
+    const value =
+      formatDate(date);
+
+
+    let label;
+
+
+    if (i===0) {
+
+      label =
+        "今日";
+
+    } else if (i===1) {
+
+      label =
+        "明日";
+
+    } else {
+
+      label =
+        `${date.getMonth()+1}/${date.getDate()}`;
+
+    }
+
+
+    const weekday =
+      ["日","月","火","水","木","金","土"]
+      [date.getDay()];
+
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+
+    option.value =
+      value;
+
+
+    option.textContent =
+      `${label}（${weekday}）`;
+
+
+    select.appendChild(
+      option
+    );
+
+  }
+
+}
+
+
+function formatDate(date) {
+
+  return (
+    date.getFullYear() +
+    "-" +
+    String(
+      date.getMonth()+1
+    ).padStart(2,"0") +
+    "-" +
+    String(
+      date.getDate()
+    ).padStart(2,"0")
+  );
+
+}
+
+
+/* =====================================
+   プロンプト生成
+===================================== */
+
+function generatePrompt() {
+
+  if (!searchOrigin) {
+
+    alert(
+      "先に現在地を取得してください。"
+    );
+
+    return;
+
+  }
+
+
+  const range =
+    document.getElementById(
+      "searchRange"
+    ).value;
+
+
+  const rangeText =
+    range === "over200"
+
+    ? "200kmを超える範囲"
+
+    : range + "km以内";
+
+
+  const prompt = `
+${searchOrigin.name}を起点として、
+${rangeText}のお出かけ先を網羅的にWeb検索してください。
+
+検索起点の参考座標：
+緯度 ${searchOrigin.latitude.toFixed(5)}
+経度 ${searchOrigin.longitude.toFixed(5)}
+
+目的は家族のお出かけ候補データベースを作ることです。
+
+検索結果上位の有名施設だけで候補を決めず、
+指定範囲内で家族のお出かけ先として有力な場所を
+可能な限り幅広く収集してください。
+
+検索は以下の観点をそれぞれ独立して行い、
+最後に候補を統合し、重複を除いてください。
+
+① 定番・観光施設
+
+・遊園地
+・テーマパーク
+・水族館
+・動物園
+・大型公園
+・有名観光施設
+
+② 自治体・公共施設
+
+・自治体運営施設
+・文化施設
+・公共の体験施設
+・複合公共施設
+・地域交流施設
+
+③ 小規模博物館・資料館
+
+・小規模博物館
+・郷土資料館
+・歴史資料館
+・記念館
+・文化館
+・地域展示施設
+・小規模美術館
+・専門ミュージアム
+
+④ 子ども・子育て施設
+
+・児童館
+・子育て支援施設
+・乳幼児向け施設
+・地域型屋内遊び場
+・プレイパーク
+・キッズスペース
+・子ども向け複合施設
+
+⑤ 科学・学習・体験
+
+・科学館
+・プラネタリウム
+・体験型展示施設
+・工場見学
+・企業ミュージアム
+・ものづくり体験
+・職業体験
+・ワークショップ施設
+
+⑥ 乗り物関連
+
+・鉄道
+・電車
+・バス
+・飛行機
+・空港
+・自動車
+・船
+・交通博物館
+・車両展示
+・交通公園
+・乗り物体験施設
+
+⑦ 公園・自然
+
+・地域公園
+・大型公園
+・自然公園
+・森林
+・河川
+・湖
+・池
+・散策スポット
+・景勝地
+・植物園
+・庭園
+
+⑧ 商業施設
+
+・ショッピングモール
+・商業施設内の子ども向け施設
+・屋内遊び場
+・体験型店舗
+・ファミリー向け施設
+
+⑨ 季節・期間限定
+
+・季節限定スポット
+・期間限定施設
+・花
+・紅葉
+・イルミネーション
+・収穫体験
+・季節イベント
+
+⑩ 現在開催中または近日開催のイベント
+
+・地域イベント
+・自治体イベント
+・子ども向けイベント
+・乗り物イベント
+・文化イベント
+・公園イベント
+・体験イベント
+・祭り
+・マルシェ
+
+特に以下の情報源も積極的に確認してください。
+
+・自治体公式サイト
+・施設公式サイト
+・自治体の子育て情報
+・自治体の文化施設情報
+・自治体の公園情報
+・自治体のイベント情報
+・地域の公共施設情報
+
+一般的な観光サイトでは見つかりにくい、
+小規模施設、地域施設、児童館、資料館、
+複合公共施設、穴場スポットも積極的に収集してください。
+
+候補数を20件、30件などに恣意的に制限せず、
+指定範囲内で有力な候補は可能な限り網羅してください。
+
+各候補について、
+最新情報をWebで確認してください。
+
+特に幼児連れで実際に利用可能か確認してください。
+
+各候補について以下を整理してください。
+
+1. 名称
+
+2. 所在エリア
+
+3. 起点からのおおよその距離km
+
+4. 施設の緯度
+
+5. 施設の経度
+
+6. 利用可能な交通手段
+
+train / car / longDistance / walk
+
+7. 交通手段ごとの
+おおよその所要時間（分）
+
+8. 屋内・屋外
+
+indoor / outdoor
+
+両方ある場合は両方記載してください。
+
+9. 現在または近日のイベントの有無
+
+10. イベント名
+
+11. イベント開始日
+
+12. イベント終了日
+
+13. 駐車場情報
+
+以下を確認してください。
+
+・専用または施設利用者向け駐車場の有無
+・駐車可能台数
+・有料 / 無料
+・施設利用による割引
+・その他重要な注意事項
+
+台数を公式情報等で確認できない場合は、
+推測せずnullにしてください。
+
+専用駐車場がなく周辺駐車場を利用する場合は、
+availableをfalseとし、
+noteにその旨を記載してください。
+
+14. 公式または信頼できる詳細URL
+
+15. 幼児連れでの特徴・注意点・おすすめ理由
+
+必ず各施設のlatitudeとlongitudeを含めてください。
+
+これらは施設ごとの
+7日間天気予報取得に使用します。
+
+最後に必ず以下のJSON形式だけを
+コードブロックで出力してください。
+
+[
+  {
+    "name":"施設名",
+    "area":"東京都○○区",
+    "distanceKm":10,
+    "latitude":35.0000,
+    "longitude":139.0000,
+
+    "transport":[
+      "train",
+      "car"
+    ],
+
+    "minutes":{
+      "train":35,
+      "car":25,
+      "longDistance":null,
+      "walk":null
+    },
+
+    "environment":[
+      "indoor"
+    ],
+
+    "event":false,
+    "eventName":"",
+    "eventStartDate":"",
+    "eventEndDate":"",
+
+    "parking":{
+      "available":true,
+      "spaces":120,
+      "note":"有料。施設利用による割引あり"
+    },
+
+    "url":"https://...",
+
+    "note":"幼児連れでの特徴や注意点"
+  }
+]
+
+JSON以外の文字を
+コードブロック内に入れないでください。
+
+事実確認できない項目は推測せず、
+nullまたは空文字にしてください。
+`;
+
+
+  document.getElementById(
+    "generatedPrompt"
+  ).value =
+    prompt.trim();
+
+
+  document.getElementById(
+    "promptArea"
+  ).style.display =
+    "block";
+
+}
+
+
+/* =====================================
+   コピー
+===================================== */
+
+async function copyPrompt() {
+
+  const text =
+    document.getElementById(
+      "generatedPrompt"
+    ).value;
+
+
+  try {
+
+    await navigator.clipboard.writeText(
+      text
+    );
+
+
+    document.getElementById(
+      "copyMessage"
+    ).textContent =
+      "✅ コピーしました。ChatGPTに貼り付けてください。";
+
+
+  } catch {
+
+    document.getElementById(
+      "generatedPrompt"
+    ).select();
+
+
+    document.getElementById(
+      "copyMessage"
+    ).textContent =
+      "⌘Cでコピーしてください。";
+
+  }
+
+}
+
+
+/* =====================================
+   JSON取り込み
+===================================== */
+
+function importSpots() {
+
+  if (!searchOrigin) {
+
+    alert(
+      "先に現在地を取得してください。"
+    );
+
+    return;
+
+  }
+
+
+  let text =
+    document.getElementById(
+      "importData"
+    ).value.trim();
+
+
+  const message =
+    document.getElementById(
+      "importMessage"
+    );
+
+
+  if (!text) {
+
+    message.className =
+      "error";
+
+    message.textContent =
+      "⚠️ JSONを貼り付けてください。";
+
+    return;
+
+  }
+
+
+  text =
+    text
+    .replace(/^```json\s*/i,"")
+    .replace(/^```\s*/i,"")
+    .replace(/```\s*$/i,"")
+    .trim();
+
+
+  try {
+
+    const imported =
+      JSON.parse(text);
+
+
+    if (!Array.isArray(imported)) {
+
+      throw new Error();
+
+    }
+
+
+    const spots =
+      getSpots();
+
+
+    let added =
+      0;
+
+
+    let skipped =
+      0;
+
+
+    imported.forEach(
+      spot => {
+
+
+        if (
+          !spot.name ||
+          spot.latitude == null ||
+          spot.longitude == null ||
+          !spot.transport ||
+          !spot.minutes ||
+          !spot.environment
+        ) {
+
+          skipped++;
+
+          return;
+
+        }
+
+
+        /*
+          parkingが無い旧形式にも対応
+        */
+
+        if (!spot.parking) {
+
+          spot.parking = {
+
+            available:null,
+            spaces:null,
+            note:"駐車場情報なし"
+
+          };
+
+        }
+
+
+        const duplicate =
+          spots.some(
+            existing => {
+
+
+              if (
+                existing.name !==
+                spot.name
+              ) {
+
+                return false;
+
+              }
+
+
+              if (
+                existing.latitude == null ||
+                existing.longitude == null
+              ) {
+
+                return true;
+
+              }
+
+
+              return distanceKm(
+
+                existing.latitude,
+                existing.longitude,
+
+                spot.latitude,
+                spot.longitude
+
+              ) < 0.5;
+
+            }
+          );
+
+
+        if (duplicate) {
+
+          skipped++;
+
+          return;
+
+        }
+
+
+        spot.searchOrigin = {
+
+          name:
+            searchOrigin.name,
+
+          latitude:
+            searchOrigin.latitude,
+
+          longitude:
+            searchOrigin.longitude
+
+        };
+
+
+        spots.push(
+          spot
+        );
+
+
+        added++;
+
+      }
+    );
+
+
+    saveSpots(
+      spots
+    );
+
+
+    message.className =
+      "success";
+
+
+    message.textContent =
+      `✅ ${added}件追加しました。${skipped}件スキップしました。`;
+
+
+    document.getElementById(
+      "importData"
+    ).value =
+      "";
+
+
+    updateCounts();
+
+    updateAreaDatabaseMessage();
+
+
+    if (
+      document.getElementById(
+        "databaseArea"
+      ).style.display === "block"
+    ) {
+
+      showDatabase();
+
+    }
+
+
+  } catch(e) {
+
+    console.log(e);
+
+
+    message.className =
+      "error";
+
+
+    message.textContent =
+      "⚠️ JSONを読み込めませんでした。JSON形式を確認してください。";
+
+  }
+
+}
+
+
+/* =====================================
+   天気API
+===================================== */
+
+async function fetchWeather(
+  spot
+) {
+
+  if (
+    spot.latitude == null ||
+    spot.longitude == null
+  ) {
+
+    return null;
+
+  }
+
+
+  const url =
+    "https://api.open-meteo.com/v1/forecast" +
+    "?latitude=" +
+    spot.latitude +
+    "&longitude=" +
+    spot.longitude +
+    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+    "&timezone=auto" +
+    "&forecast_days=7";
+
+
+  try {
+
+    const response =
+      await fetch(url);
+
+
+    if (!response.ok) {
+
+      return null;
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    const days =
+      [];
+
+
+    for (
+      let i=0;
+      i<data.daily.time.length;
+      i++
+    ) {
+
+      days.push({
+
+        date:
+          data.daily.time[i],
+
+        code:
+          data.daily.weather_code[i],
+
+        max:
+          Math.round(
+            data.daily.temperature_2m_max[i]
+          ),
+
+        min:
+          Math.round(
+            data.daily.temperature_2m_min[i]
+          ),
+
+        rain:
+          data.daily.precipitation_probability_max[i]
+
+      });
+
+    }
+
+
+    return days;
+
+
+  } catch(e) {
+
+    return null;
+
+  }
+
+}
+
+
+/* =====================================
+   天気コード
+===================================== */
+
+function weatherInfo(code) {
+
+  if (code === 0) {
+
+    return {
+      icon:"☀️",
+      text:"晴れ",
+      quality:"good"
+    };
+
+  }
+
+
+  if (
+    code === 1 ||
+    code === 2
+  ) {
+
+    return {
+      icon:"🌤️",
+      text:"晴れ・曇り",
+      quality:"good"
+    };
+
+  }
+
+
+  if (code === 3) {
+
+    return {
+      icon:"☁️",
+      text:"曇り",
+      quality:"neutral"
+    };
+
+  }
+
+
+  if (
+    code === 45 ||
+    code === 48
+  ) {
+
+    return {
+      icon:"🌫️",
+      text:"霧",
+      quality:"neutral"
+    };
+
+  }
+
+
+  if (
+    (code >= 51 && code <= 67) ||
+    (code >= 80 && code <= 82)
+  ) {
+
+    return {
+      icon:"🌧️",
+      text:"雨",
+      quality:"bad"
+    };
+
+  }
+
+
+  if (
+    code >= 71 &&
+    code <= 77
+  ) {
+
+    return {
+      icon:"🌨️",
+      text:"雪",
+      quality:"bad"
+    };
+
+  }
+
+
+  if (
+    code >= 95
+  ) {
+
+    return {
+      icon:"⛈️",
+      text:"雷雨",
+      quality:"bad"
+    };
+
+  }
+
+
+  return {
+    icon:"🌥️",
+    text:"変わりやすい",
+    quality:"neutral"
+  };
+
+}
+
+
+/* =====================================
+   7日間予報HTML
+===================================== */
+
+function weatherHTML(days) {
+
+  if (!days) {
+
+    return `
+      <p class="small">
+      天気予報を取得できませんでした。
+      </p>
+    `;
+
+  }
+
+
+  let html =
+    `<div class="weather-strip">`;
+
+
+  days.forEach(
+    day => {
+
+
+      const info =
+        weatherInfo(
+          day.code
+        );
+
+
+      const d =
+        new Date(
+          day.date +
+          "T12:00:00"
+        );
+
+
+      const weekday =
+        ["日","月","火","水","木","金","土"]
+        [d.getDay()];
+
+
+      html += `
+
+        <div class="weather-day">
+
+          <div class="weather-date">
+            ${d.getMonth()+1}/${d.getDate()}
+            （${weekday}）
+          </div>
+
+          <div class="weather-icon">
+            ${info.icon}
+          </div>
+
+          <div class="weather-temp">
+            ${day.max}° / ${day.min}°
+          </div>
+
+          <div class="small">
+            ☔ ${day.rain ?? "-"}%
+          </div>
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+  html +=
+    `</div>`;
+
+
+  return html;
+
+}
+
+
+/* =====================================
+   駐車場表示
+===================================== */
+
+function parkingHTML(spot) {
+
+  const parking =
+    spot.parking;
+
+
+  if (!parking) {
+
+    return `
+      <div class="parking-box">
+      🅿️ 駐車場情報なし
+      </div>
+    `;
+
+  }
+
+
+  if (
+    parking.available === true
+  ) {
+
+    let spacesText =
+      "";
+
+
+    if (
+      parking.spaces != null
+    ) {
+
+      spacesText =
+        `：${parking.spaces}台`;
+
+    }
+
+
+    return `
+
+      <div class="parking-box">
+
+      <strong>
+      🅿️ 駐車場あり${spacesText}
+      </strong>
+
+      ${
+        parking.note
+        ? `<br>${parking.note}`
+        : ""
+      }
+
+      </div>
+
+    `;
+
+  }
+
+
+  if (
+    parking.available === false
+  ) {
+
+    return `
+
+      <div class="parking-box">
+
+      <strong>
+      🅿️ 専用駐車場なし
+      </strong>
+
+      ${
+        parking.note
+        ? `<br>${parking.note}`
+        : ""
+      }
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <div class="parking-box">
+
+    🅿️ 駐車場情報不明
+
+    ${
+      parking.note
+      ? `<br>${parking.note}`
+      : ""
+    }
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================
+   DB一覧 開閉
+===================================== */
+
+function toggleDatabase() {
+
+  const area =
+    document.getElementById(
+      "databaseArea"
+    );
+
+
+  const button =
+    document.getElementById(
+      "databaseToggleButton"
+    );
+
+
+  if (
+    area.style.display ===
+    "block"
+  ) {
+
+    area.style.display =
+      "none";
+
+
+    button.textContent =
+      "🗂 データベース一覧を見る";
+
+
+    return;
+
+  }
+
+
+  area.style.display =
+    "block";
+
+
+  button.textContent =
+    "✕ データベース一覧を閉じる";
+
+
+  showDatabase();
+
+}
+
+
+/* =====================================
+   DB一覧
+===================================== */
+
+async function showDatabase() {
+
+  const spots =
+    getSpots();
+
+
+  const list =
+    document.getElementById(
+      "databaseList"
+    );
+
+
+  document.getElementById(
+    "databaseListCount"
+  ).textContent =
+    `登録件数：${spots.length}件`;
+
+
+  list.innerHTML =
+    "";
+
+
+  if (
+    spots.length === 0
+  ) {
+
+    list.innerHTML =
+      "<p>まだデータがありません。</p>";
+
+    return;
+
+  }
+
+
+  for (
+    const spot of spots
+  ) {
+
+    const card =
+      document.createElement(
+        "div"
+      );
+
+
+    card.className =
+      "database-card";
+
+
+    const environments =
+      (spot.environment || [])
+      .map(
+        value =>
+
+          value === "indoor"
+
+          ? "🏠 屋内"
+
+          : "🌳 屋外"
+
+      )
+      .join(" / ");
+
+
+    const eventText =
+      spot.event
+
+      ? `🎪 ${spot.eventName || "イベント情報あり"}`
+
+      : "イベント情報なし";
+
+
+    card.innerHTML = `
+
+      <h3>
+      ${spot.name}
+      </h3>
+
+      <div class="origin-tag">
+
+      🔎 ${
+        spot.searchOrigin?.name ||
+        "旧データ"
+      }起点
+
+      </div>
+
+      <p>
+
+      📍 ${spot.area}
+      ｜約${spot.distanceKm ?? "-"}km
+
+      <br>
+
+      ${environments}
+
+      </p>
+
+      ${parkingHTML(spot)}
+
+      <p>
+      ${eventText}
+      </p>
+
+      <div class="weatherLoading">
+      🌤 7日間予報を取得中...
+      </div>
+
+      <p class="note">
+      ${spot.note || ""}
+      </p>
+
+      ${
+        spot.url
+
+        ? `<a
+             href="${spot.url}"
+             target="_blank"
+             rel="noopener">
+             詳細を見る →
+           </a>`
+
+        : ""
+      }
+
+    `;
+
+
+    list.appendChild(
+      card
+    );
+
+
+    const weather =
+      await fetchWeather(
+        spot
+      );
+
+
+    card.querySelector(
+      ".weatherLoading"
+    ).innerHTML =
+      weatherHTML(
+        weather
+      );
+
+  }
+
+}
+
+
+/* =====================================
+   イベント判定
+===================================== */
+
+function isEventActive(
+  spot,
+  selectedDate
+) {
+
+  if (
+    !spot.event ||
+    !spot.eventStartDate ||
+    !spot.eventEndDate
+  ) {
+
+    return false;
+
+  }
+
+
+  return (
+    spot.eventStartDate <= selectedDate &&
+    spot.eventEndDate >= selectedDate
+  );
+
+}
+
+
+/* =====================================
+   マッチング
+===================================== */
+
+async function findMatches() {
+
+  if (!searchOrigin) {
+
+    alert(
+      "先に現在地を取得してください。"
+    );
+
+    return;
+
+  }
+
+
+  const spots =
+    getLocalSpots();
+
+
+  const results =
+    document.getElementById(
+      "results"
+    );
+
+
+  results.style.display =
+    "block";
+
+
+  if (
+    spots.length === 0
+  ) {
+
+    document.getElementById(
+      "resultSummary"
+    ).textContent =
+      "この周辺のお出かけデータがまだありません。STEP 1から候補を集めてください。";
+
+
+    document.getElementById(
+      "resultList"
+    ).innerHTML =
+      "";
+
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "resultSummary"
+  ).textContent =
+    "🌤 各候補地の天気を確認しています...";
+
+
+  const transport =
+    document.getElementById(
+      "transport"
+    ).value;
+
+
+  const maxTimeValue =
+    document.getElementById(
+      "maxTime"
+    ).value;
+
+
+  const environment =
+    document.getElementById(
+      "environment"
+    ).value;
+
+
+  const selectedDate =
+    document.getElementById(
+      "outingDay"
+    ).value;
+
+
+  const candidates =
+    [];
+
+
+  for (
+    const spot of spots
+  ) {
+
+
+    /*
+      交通手段
+    */
+
+    if (
+      !spot.transport?.includes(
+        transport
+      )
+    ) {
+
+      continue;
+
+    }
+
+
+    const travelTime =
+      spot.minutes?.[
+        transport
+      ];
+
+
+    if (
+      travelTime == null
+    ) {
+
+      continue;
+
+    }
+
+
+    /*
+      時間上限
+    */
+
+    if (
+      maxTimeValue !== "over120" &&
+      travelTime >
+      Number(maxTimeValue)
+    ) {
+
+      continue;
+
+    }
+
+
+    if (
+      maxTimeValue === "over120" &&
+      travelTime <= 120
+    ) {
+
+      continue;
+
+    }
+
+
+    /*
+      獲得点と評価対象の満点（基本点なし）
+    */
+
+    let score = 0;
+    let maxScore = 30; // 移動時間は常に評価
+
+
+    const reasons =
+      [];
+
+
+    reasons.push(
+      "お出かけ候補"
+    );
+
+
+    /*
+      屋内・屋外
+      最大20点。「どちらでも」・施設特性不明は対象外
+    */
+
+    if (
+      environment === "any"
+    ) {
+
+      // 希望なしのため屋内外20点を分母にも含めない
+
+
+      reasons.push(
+        "屋内・屋外どちらでも"
+      );
+
+    } else if (
+      spot.environment?.includes(
+        environment
+      )
+    ) {
+
+      maxScore += 20;
+      score += 20;
+
+
+      reasons.push(
+
+        environment === "indoor"
+
+        ? "屋内条件一致"
+
+        : "屋外条件一致"
+
+      );
+
+    } else {
+
+      /*
+        希望と違う場合は
+        除外まではしないが大幅減点
+      */
+
+      if (spot.environment?.length) maxScore += 20;
+
+
+      reasons.push(
+        "屋内外条件は不一致"
+      );
+
+    }
+
+
+    /*
+      移動時間
+      最大30点
+    */
+
+    let timeScore =
+      0;
+
+
+    if (
+      maxTimeValue ===
+      "over120"
+    ) {
+
+      timeScore =
+        20;
+
+    } else {
+
+      const maxTime =
+        Number(
+          maxTimeValue
+        );
+
+
+      const ratio =
+        travelTime /
+        maxTime;
+
+
+      if (
+        ratio <= .35
+      ) {
+
+        timeScore =
+          30;
+
+      } else if (
+        ratio <= .6
+      ) {
+
+        timeScore =
+          26;
+
+      } else if (
+        ratio <= .8
+      ) {
+
+        timeScore =
+          22;
+
+      } else {
+
+        timeScore =
+          17;
+
+      }
+
+    }
+
+
+    score +=
+      timeScore;
+
+
+    reasons.push(
+      `${transportLabel(transport)} 約${travelTime}分`
+    );
+
+
+    /*
+      天気
+    */
+
+    const forecast =
+      await fetchWeather(
+        spot
+      );
+
+
+    const selectedWeather =
+      forecast?.find(
+        day =>
+          day.date ===
+          selectedDate
+      ) || null;
+
+
+    if (
+      selectedWeather && Number.isFinite(selectedWeather.code)
+    ) {
+
+      maxScore += 25;
+
+      const info =
+        weatherInfo(
+          selectedWeather.code
+        );
+
+
+      /*
+        屋外指定
+      */
+
+      if (
+        environment === "outdoor"
+      ) {
+
+        if (
+          info.quality === "good"
+        ) {
+
+          score += 25;
+
+
+          reasons.push(
+            "現地予報が屋外向き"
+          );
+
+        } else if (
+          info.quality === "neutral"
+        ) {
+
+          score += 12.5;
+
+
+          reasons.push(
+            "現地予報は曇り中心"
+          );
+
+        } else {
+
+          score += 0;
+
+
+          reasons.push(
+            "雨・雪予報"
+          );
+
+        }
+
+      }
+
+
+      /*
+        屋内指定
+      */
+
+      else if (
+        environment === "indoor"
+      ) {
+
+        if (
+          info.quality === "bad"
+        ) {
+
+          score += 25;
+
+
+          reasons.push(
+            "雨天でも屋内で楽しめる"
+          );
+
+        } else {
+
+          score += 15;
+
+
+          reasons.push(
+            "天候の影響が小さい"
+          );
+
+        }
+
+      }
+
+
+      /*
+        どちらでも
+        → 天気と施設特性を自動評価
+      */
+
+      else {
+
+        const hasIndoor =
+          spot.environment?.includes(
+            "indoor"
+          );
+
+
+        const hasOutdoor =
+          spot.environment?.includes(
+            "outdoor"
+          );
+
+
+        if (
+          info.quality === "good"
+        ) {
+
+          if (
+            hasOutdoor
+          ) {
+
+            score += 25;
+
+
+            reasons.push(
+              "晴天＋屋外利用可"
+            );
+
+          } else {
+
+            score += 15;
+
+
+            reasons.push(
+              "晴天"
+            );
+
+          }
+
+        }
+
+
+        else if (
+          info.quality === "neutral"
+        ) {
+
+          score += 15;
+
+
+          reasons.push(
+            "曇り予報"
+          );
+
+        }
+
+
+        else {
+
+          if (
+            hasIndoor
+          ) {
+
+            score += 25;
+
+
+            reasons.push(
+              "雨予報＋屋内利用可"
+            );
+
+          } else {
+
+            score += 0;
+
+
+            reasons.push(
+              "雨予報＋屋外中心"
+            );
+
+          }
+
+        }
+
+      }
+
+    }
+
+
+    /*
+      イベント
+      最大15点。開催有無・日程が不明の場合は対象外
+    */
+
+    if (spot.event === false ||
+        (spot.event === true && spot.eventStartDate && spot.eventEndDate)) {
+      maxScore += 15;
+    }
+
+    if (
+      isEventActive(
+        spot,
+        selectedDate
+      )
+    ) {
+
+      score += 15;
+
+
+      reasons.push(
+        "選択日にイベントあり"
+      );
+
+    }
+
+
+    /*
+      駐車場
+      車選択時のみ評価
+    */
+
+    if (
+      transport === "car"
+    ) {
+
+      if (
+        spot.parking?.available === true
+      ) {
+
+        maxScore += 10;
+        score += 10;
+
+
+        if (
+          spot.parking.spaces != null
+        ) {
+
+          reasons.push(
+            `駐車場あり ${spot.parking.spaces}台`
+          );
+
+        } else {
+
+          reasons.push(
+            "駐車場あり"
+          );
+
+        }
+
+      }
+
+
+      else if (
+        spot.parking?.available === false
+      ) {
+
+        maxScore += 10;
+
+
+        reasons.push(
+          "専用駐車場なし"
+        );
+
+      }
+
+    }
+
+
+    /*
+      100点に正規化
+    */
+
+    // 満点を超えた点数の切り捨てではなく、評価対象だけで正規化する。
+    score = Math.round(score / maxScore * 100);
+
+
+    candidates.push({
+
+      spot,
+      score,
+      travelTime,
+      reasons,
+      selectedWeather
+
+    });
+
+  }
+
+
+  /*
+    マッチ度降順
+    同点なら近い順
+  */
+
+  candidates.sort(
+
+    (a,b) =>
+
+      b.score -
+      a.score ||
+
+      a.travelTime -
+      b.travelTime
+
+  );
+
+
+  showResults(
+    candidates,
+    selectedDate,
+    transport
+  );
+
+}
+
+
+/* =====================================
+   結果表示
+===================================== */
+
+function showResults(
+  candidates,
+  selectedDate,
+  transport
+) {
+
+  const list =
+    document.getElementById(
+      "resultList"
+    );
+
+
+  const summary =
+    document.getElementById(
+      "resultSummary"
+    );
+
+
+  list.innerHTML =
+    "";
+
+
+  if (
+    candidates.length === 0
+  ) {
+
+    summary.textContent =
+      "条件に合う候補がありませんでした。条件を少し広げてみてください。";
+
+    return;
+
+  }
+
+
+  summary.textContent =
+    `${candidates.length}件見つかりました。現地天気・移動時間などを含むマッチ度順です。`;
+
+
+  candidates.forEach(
+    (candidate,index) => {
+
+
+      const spot =
+        candidate.spot;
+
+
+      let rank =
+        "";
+
+
+      if (index===0) {
+
+        rank =
+          "🥇 ";
+
+      }
+
+
+      if (index===1) {
+
+        rank =
+          "🥈 ";
+
+      }
+
+
+      if (index===2) {
+
+        rank =
+          "🥉 ";
+
+      }
+
+
+      /*
+        天気
+      */
+
+      let weatherBlock = `
+
+        <div class="selected-weather">
+        🌤 選択日の予報を取得できませんでした
+        </div>
+
+      `;
+
+
+      if (
+        candidate.selectedWeather
+      ) {
+
+        const w =
+          candidate.selectedWeather;
+
+
+        const info =
+          weatherInfo(
+            w.code
+          );
+
+
+        weatherBlock = `
+
+          <div class="selected-weather">
+
+          <strong>
+          ${info.icon}
+          ${info.text}
+          </strong>
+
+          <br>
+
+          🌡 ${w.max}℃ / ${w.min}℃
+
+          ｜
+
+          ☔ 降水確率
+          ${w.rain ?? "-"}%
+
+          </div>
+
+        `;
+
+      }
+
+
+      /*
+        イベント
+      */
+
+      let eventBlock =
+        "";
+
+
+      if (
+        isEventActive(
+          spot,
+          selectedDate
+        )
+      ) {
+
+        eventBlock = `
+
+          <div class="event-box">
+
+          <strong>
+          🎪 ${
+            spot.eventName ||
+            "イベントあり"
+          }
+          </strong>
+
+          ${
+            spot.eventStartDate
+            ? `<br>${spot.eventStartDate}
+               〜
+               ${spot.eventEndDate || ""}`
+            : ""
+          }
+
+          </div>
+
+        `;
+
+      }
+
+
+      /*
+        駐車場
+      */
+
+      const parkingBlock =
+        transport === "car"
+
+        ? parkingHTML(
+            spot
+          )
+
+        : "";
+
+
+      /*
+        カード
+      */
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "result-card";
+
+
+      card.innerHTML = `
+
+        <h3>
+        ${rank}${spot.name}
+        </h3>
+
+        <div class="score">
+        マッチ度 ${candidate.score}%
+        </div>
+
+        <p>
+
+        📍 ${spot.area}
+
+        ｜
+
+        約${spot.distanceKm ?? "-"}km
+
+        </p>
+
+        ${weatherBlock}
+
+        ${parkingBlock}
+
+        ${eventBlock}
+
+        <p>
+
+        ${
+          candidate.reasons
+          .map(
+            reason =>
+              "✓ " +
+              reason
+          )
+          .join("<br>")
+        }
+
+        </p>
+
+        <p class="note">
+
+        ${spot.note || ""}
+
+        </p>
+
+        ${
+          spot.url
+
+          ? `<a
+               href="${spot.url}"
+               target="_blank"
+               rel="noopener">
+               詳細を見る →
+             </a>`
+
+          : ""
+        }
+
+      `;
+
+
+      list.appendChild(
+        card
+      );
+
+    }
+  );
+
+
+  document.getElementById(
+    "results"
+  ).scrollIntoView({
+
+    behavior:
+      "smooth"
+
+  });
+
+}
+
+
+/* =====================================
+   交通手段ラベル
+===================================== */
+
+function transportLabel(
+  value
+) {
+
+  return {
+
+    train:
+      "電車・バス",
+
+    car:
+      "車",
+
+    longDistance:
+      "新幹線・飛行機",
+
+    walk:
+      "徒歩"
+
+  }[value] || value;
+
+}
+
+
+/* =====================================
+   DB削除
+===================================== */
+
+function clearDatabase() {
+
+  if (
+    !confirm(
+      "すべてのお出かけ候補を削除しますか？"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  localStorage.removeItem(
+    "outingSpotsV07"
+  );
+
+
+  updateCounts();
+
+
+  if (
+    searchOrigin
+  ) {
+
+    updateAreaDatabaseMessage();
+
+  }
+
+
+  document.getElementById(
+    "databaseArea"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "databaseToggleButton"
+  ).textContent =
+    "🗂 データベース一覧を見る";
+
+
+  document.getElementById(
+    "results"
+  ).style.display =
+    "none";
+
+}
+
+
+/* =====================================
+   起動
+===================================== */
+
+setupDays();
+
+updateCounts();
+
+</script>
+
+</body>
+</html>
